@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop • Poorva Khambekar</title>
+
+    <!-- import fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- site stylesheet -->
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- Shop-only styles -->
+    <style>
+      :root{
+        --paper:#f4efe6;
+        --ink:#5a513e;
+        --card:#efe5d2;
+        --accent:#b59a63;
+        --shadow:0 12px 28px rgba(0,0,0,.18);
+      }
+
+      /* Layout: products on left, cart on right (hidden until first add) */
+      .shop-layout{
+        display:grid;
+        grid-template-columns: 1fr; /* cart hidden by default */
+        gap:1.25rem;
+        align-items:start;
+        transition: grid-template-columns 220ms ease;
+      }
+      body.cart-open .shop-layout{
+        grid-template-columns: 3fr 1fr;  /* ~ 3/4 + 1/4 */
+      }
+
+      /* Products grid */
+      .products-grid{
+        display:grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap:1.25rem;
+      }
+      .product{
+        background:var(--card);
+        border-radius: 0; /* hard corners */
+        overflow:hidden;
+        box-shadow: var(--shadow);
+        position:relative;
+        display:flex; flex-direction:column;
+      }
+      .product img{
+        width:100%; height:260px; object-fit:cover; display:block;
+      }
+      .product .meta{
+        padding:1rem 1rem 1.1rem;
+        color:#4c4739;
+      }
+      .product .meta h3{ margin:0 0 .35rem; font-weight:700; letter-spacing:.02em; }
+      .product .meta .price{ font-weight:700; color:var(--ink); }
+      .product .meta .dim{ color:rgba(76,71,57,.75); }
+
+      /* Heart (add to cart) button */
+      .add-btn{
+        position:absolute; right:.75rem; bottom:.75rem;
+        background:#fff; border:1px solid rgba(0,0,0,.08);
+        width:42px; height:42px; border-radius:50%;
+        display:grid; place-items:center;
+        box-shadow:0 6px 18px rgba(0,0,0,.15);
+        cursor:pointer;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+      .add-btn:hover{ transform: translateY(-1px); box-shadow:0 10px 20px rgba(0,0,0,.18); }
+      .add-btn svg{ width:20px; height:20px; fill:none; stroke:#b35a5a; stroke-width:2; }
+      .add-btn.added svg{ fill:#d87070; stroke:#d87070; }
+
+      /* Cart panel */
+      .cart{
+        background:#fbf7ee;
+        border-left:1px solid rgba(0,0,0,.08);
+        padding:1rem;
+        min-height:60vh;
+        position:sticky; top:70px;             /* stick under navbar */
+        overflow:auto;
+        display:none;                           /* fully hidden when closed */
+      }
+      body.cart-open .cart{ display:block; }    /* only render when open */
+      .cart h2{ margin:.25rem 0 1rem; font-family:"Playfair Display", serif; }
+      .cart-empty{ color:rgba(76,71,57,.7); font-style:italic; padding:.5rem 0 1rem; }
+      .cart-item{
+        display:grid; grid-template-columns:56px 1fr auto; gap:.6rem;
+        align-items:center; padding:.5rem 0; border-bottom:1px solid rgba(0,0,0,.06);
+      }
+      .cart-item img{ width:56px; height:56px; object-fit:cover; border-radius:4px; }
+      .cart-item .title{ font-weight:600; }
+      .cart-item .small{ font-size:.9rem; color:rgba(76,71,57,.7); }
+      .cart-item .qty{ display:flex; align-items:center; gap:.35rem; }
+      .cart-item button{ border:1px solid rgba(0,0,0,.15); background:#fff; padding:.25rem .5rem; cursor:pointer; }
+      .cart-total{
+        display:flex; justify-content:space-between; align-items:center;
+        padding:.9rem 0 0; margin-top:.4rem; font-weight:700; border-top:1px solid rgba(0,0,0,.1);
+      }
+      .checkout{
+        .clear-cart {
+          width: 100%;
+          margin-top: .5rem;
+          padding: .6rem 1rem;
+          border: 1px solid rgba(0,0,0,.18);
+          background: #fff;
+          color: #3b362a;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .clear-cart:hover {
+          background: #f3ede2;
+        }
+
+        width:100%; margin-top:.75rem; padding:.7rem 1rem; border:0; cursor:pointer;
+        background:var(--accent); color:#0a0c10; font-weight:700;
+      }
+
+      /* Toast "Added to cart" */
+      .toast{
+        position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px);
+        background:#222; color:#fff; padding:.6rem .9rem; border-radius:10px;
+        opacity:0; pointer-events:none;
+        transition: opacity 180ms ease, transform 180ms ease;
+        z-index:9999;
+      }
+      .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+      /* Responsive: on narrow screens the cart becomes full-width under products */
+      @media (max-width: 900px){
+        body.cart-open .shop-layout{ grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- same navbar -->
+    <nav class="topnav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="work.html">Work</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+
+      <a class="brand" href="index.html">PK</a>
+
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="page-content">
+      <h1 class="display">Shop</h1>
+      <p class="intro">Place orders for the pieces you like!</p>
+
+      <div class="shop-layout">
+        <!-- LEFT: products -->
+        <section id="products" class="products-grid" aria-label="Art pieces for sale"></section>
+
+        <!-- RIGHT: cart -->
+        <aside id="cart" class="cart" aria-label="Shopping cart">
+          <h2>Your Cart</h2>
+          <div id="cartList" class="cart-list">
+            <p class="cart-empty">Your cart is empty.</p>
+          </div>
+          <div class="cart-total">
+            <span>Total</span>
+            <span id="cartTotal">$0</span>
+          </div>
+          <button class="clear-cart" type="button">Clear cart</button>
+          <button class="checkout" type="button" onclick="alert('Checkout is yet to be coded! 😊')">Checkout</button>
+        </aside>
+      </div>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite">Added to cart</div>
+
+    <!-- Shop logic -->
+    <script>
+      // ---------- Data ----------
+      const products = [
+        { id:'intertwined',   title:'Intertwined',       src:'./art/art_11.png', price:140, size:'11.5" × 14"' },
+        { id:'portrait-study',title:'Girl With Golden Hoops',    src:'./art/art_7.png',  price:120, size:'8" × 10"' },
+        { id:'portrait-sketch',title:'Doodle in Ink',  src:'./art/art_1.png',  price:30,  size:'5" × 8"'  },
+        { id:'fashion-study', title:'Secret Garden',     src:'./art/art_4.png',  price:110, size:'9" × 12"' },
+        { id:'floral-bouquet',title:'Cafe 9 Ways',    src:'./art/art_6.png',  price:60, size:'11" × 14"'},
+        { id:'grandfather',title:'Grandfather',    src:'./art/art_9.png',  price:130, size:'10" × 10"'},
+        { id:'rose',          title:'Rose',              src:'./art/art_3.png',  price:50, size:'9" × 12"' },
+        { id:'abstract-lines',title:'Melting',    src:'./art/art_2.png',  price:95, size:'9" × 12"' },
+        { id:'cala-lily',     title:'Cala Lily',         src:'./art/art_5.png',  price:40, size:'9" × 12"' },
+        { id:'workspace',     title:'The Painted Ladies',         src:'./art/art_8.png',  price:200, size:'10" × 12"' },
+        { id:'papaya',        title:'Rose Trio',            src:'./art/art_10.png', price:90, size:'12" × 16"'},
+        { id:'papaya',        title:'Devi',            src:'./art/art_12.jpeg', price:75, size:'12" × 16"'},
+      ];
+
+      // ---------- Render product cards ----------
+      const productsEl = document.getElementById('products');
+      productsEl.innerHTML = products.map(p => `
+        <article class="product" data-id="${p.id}">
+          <img src="${p.src}" alt="${p.title}">
+          <div class="meta">
+            <h3>${p.title}</h3>
+            <div class="price">$${p.price}</div>
+            <div class="dim">${p.size}</div>
+          </div>
+          <button class="add-btn" aria-label="Add ${p.title} to cart" title="Add to cart">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21s-6.5-4-9-7.5C1 10 3 7 6 7c1.9 0 3.1 1 4 2 0.9-1 2.1-2 4-2 3 0 5 3 3 6.5C18.5 17 12 21 12 21z"/>
+            </svg>
+          </button>
+        </article>
+      `).join('');
+
+      // ---------- Cart state + persistence ----------
+      const CART_KEY = 'pk_cart_v1';
+      const cart = new Map(); // id -> {product, qty}
+      const cartList = document.getElementById('cartList');
+      const cartTotal = document.getElementById('cartTotal');
+      const toast = document.getElementById('toast');
+
+      function fmt(n){ return '$' + n.toFixed(2).replace(/\.00$/,''); }
+
+      function saveCart(){
+        const data = [...cart].map(([id, {qty}]) => ({ id, qty }));
+        localStorage.setItem(CART_KEY, JSON.stringify(data));
+      }
+      function loadCart(){
+        try{
+          const raw = localStorage.getItem(CART_KEY);
+          if(!raw) return;
+          const arr = JSON.parse(raw);
+          arr.forEach(({id, qty})=>{
+            const product = products.find(p=>p.id===id);
+            if(product && qty>0) cart.set(id, {product, qty});
+          });
+        }catch{}
+      }
+
+      function setHeartsFromCart(){
+        document.querySelectorAll('.add-btn.added').forEach(b=>b.classList.remove('added'));
+        for(const [id] of cart){
+          const btn = document.querySelector(`.product[data-id="${id}"] .add-btn`);
+          if(btn) btn.classList.add('added');
+        }
+      }
+
+      function renderCart(){
+        if (cart.size === 0){
+          cartList.innerHTML = '<p class="cart-empty">Your cart is empty.</p>';
+          cartTotal.textContent = '$0';
+          document.body.classList.remove('cart-open');  // hide panel completely
+          saveCart();
+          setHeartsFromCart();
+          return;
+        }
+        let html = '';
+        let total = 0;
+        for (const [id, entry] of cart){
+          const { product, qty } = entry;
+          total += product.price * qty;
+          html += `
+            <div class="cart-item" data-id="${id}">
+              <img src="${product.src}" alt="${product.title}">
+              <div>
+                <div class="title">${product.title}</div>
+                <div class="small">${product.size} • ${fmt(product.price)}</div>
+                <div class="qty">
+                  <button class="dec" aria-label="Decrease quantity">−</button>
+                  <span>${qty}</span>
+                  <button class="inc" aria-label="Increase quantity">+</button>
+                  <button class="rm"  aria-label="Remove item" style="margin-left:.5rem">Remove</button>
+                </div>
+              </div>
+              <div>${fmt(product.price * qty)}</div>
+            </div>
+          `;
+        }
+        cartList.innerHTML = html;
+        cartTotal.textContent = fmt(total);
+        document.body.classList.add('cart-open');       // reveal panel
+        saveCart();
+        setHeartsFromCart();
+      }
+
+      function showToast(msg='Added to cart'){
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(()=> toast.classList.remove('show'), 1200);
+      }
+
+      // Add-to-cart
+      productsEl.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.add-btn');
+        if (!btn) return;
+        const card = btn.closest('.product');
+        const id = card.dataset.id;
+        const product = products.find(p=>p.id===id);
+        const entry = cart.get(id) || { product, qty:0 };
+        entry.qty += 1;
+        cart.set(id, entry);
+        renderCart();
+        showToast('Added to cart');
+      });
+
+      // Cart actions
+      cartList.addEventListener('click', (e)=>{
+        const row = e.target.closest('.cart-item');
+        if(!row) return;
+        const id = row.dataset.id;
+        const entry = cart.get(id);
+        if(!entry) return;
+
+        if (e.target.classList.contains('inc')){
+          entry.qty += 1;
+        } else if (e.target.classList.contains('dec')){
+          entry.qty = Math.max(0, entry.qty - 1);
+        } else if (e.target.classList.contains('rm')){
+          entry.qty = 0;
+        }
+        if (entry.qty === 0) cart.delete(id);
+        renderCart();
+      });
+
+      // Clear cart
+      document.querySelector('.clear-cart').addEventListener('click', ()=>{
+        if (cart.size === 0) return;
+        if (!confirm('Clear all items from your cart?')) return;
+        cart.clear();
+        renderCart();            // updates UI and localStorage
+        showToast('Cart cleared');
+      });
+
+
+      // ---- INIT: restore cart from localStorage, open if not empty, sync hearts ----
+      loadCart();
+      renderCart();               // will open/close panel based on cart size
+      setHeartsFromCart();
+    </script>
+
+    <!-- global script -->
+    <script src="./script.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Art Portfolio • Poorva Khambekar</title>
+
+    <!-- Fonts: classy serif for headings + clean sans for text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- Top nav -->
+    <nav class="topnav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="work.html">Work</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+
+      <a class="brand" href="index.html">PK</a>
+
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <!-- Hero -->
+      <section class="hero-crest">
+        <svg class="name-ring" viewBox="0 0 300 300" aria-hidden="true">
+          <defs>
+            <path id="topArc" d="M 20,150 A 130,130 0 0 1 280,150" />
+          </defs>
+          <text class="ring-text" text-anchor="middle">
+            <textPath href="#topArc" startOffset="50%">•POORVA KHAMBEKAR•</textPath>
+          </text>
+        </svg>
+
+        <h1 class="display">ART PORTFOLIO</h1>
+            <!-- Background hero images -->
+            <!--
+              <div class="hero-images">
+              <img src="./images/.png" alt="Background accent" class="hero-img hero-img-top" />
+              <img src="./images/hero_bottom_left.png" alt="Background accent" class="hero-img hero-img-bottom" />
+            </div>
+          
+            -->
+
+            <!-- Background hero images -->
+            <div class="hero-images" aria-hidden="true">
+              <!-- replace src paths with your transparent PNG/SVGs -->
+              <img src="./images/lineart5.png"  alt="" class="hero-img hero-img-top">
+              <img src="./images/lineart3.png" alt="" class="hero-img hero-img-bottom">
+            </div>
+
+          
+
+        <div class="motif" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Featured Work -->
+    <section id="featured" class="featured">
+      <div class="featured-head">
+        <h2 class="featured-title">Featured Work</h2>
+        <p class="featured-sub">A selection of my latest pieces</p>
+      </div>
+
+      <div class="carousel" aria-label="Featured work carousel">
+        <div class="carousel-track">
+          <!-- Now all cards just link to work.html (top of page) -->
+          <a class="card-link" href="work.html" aria-label="View Portrait Sketch">
+            <article class="card">
+              <img src="./images/art_1.png" alt="Portrait Sketch" />
+              <div class="card-meta">
+                <h3>Portrait Sketch</h3>
+                <span>2023</span>
+              </div>
+            </article>
+          </a>
+
+          <a class="card-link" href="work.html" aria-label="View Woman">
+            <article class="card">
+              <img src="./images/art_7.png" alt="Woman" />
+              <div class="card-meta">
+                <h3>Woman</h3>
+                <span>2024</span>
+              </div>
+            </article>
+          </a>
+
+          <a class="card-link" href="work.html" aria-label="View Floral Bouquet">
+            <article class="card">
+              <img src="./images/art_6.png" alt="Floral Bouquet" />
+              <div class="card-meta">
+                <h3>Floral Bouquet</h3>
+                <span>2024</span>
+              </div>
+            </article>
+          </a>
+
+          <a class="card-link" href="work.html" aria-label="View Fashion Study">
+            <article class="card">
+              <img src="./images/art_4.png" alt="Fashion Study" />
+              <div class="card-meta">
+                <h3>Fashion Study</h3>
+                <span>2023</span>
+              </div>
+            </article>
+          </a>
+
+          <a class="card-link" href="work.html" aria-label="View Urban Geometry">
+            <article class="card">
+              <img src="./images/art_5.png" alt="Lily" />
+              <div class="card-meta">
+                <h3>Urban Geometry</h3>
+                <span>2022</span>
+              </div>
+            </article>
+          </a>
+        </div>
+      </div>
+    </section>
+
+        <!-- Projects -->
+    <section id="projects" class="projects">
+      <!-- Left: images -->
+      <div class="projects-images">
+        <figure class="project-photo">
+          <!-- replace with your real image -->
+          <img src="./images/art_28.png" alt="Artwork being sold to raise funds" />
+        </figure>
+
+       
+      </div>
+
+      <!-- Right: text -->
+      <div class="projects-copy">
+        <p class="projects-eyebrow">Projects</p>
+        <h2 class="projects-title">Covid Fundraiser (2021)</h2>
+        <p class="projects-sub">
+          Raised $700 for oxygen meters in a rural village in India
+        </p>
+
+        <p>
+          During the height of the pandemic, I organized a small art fundraiser to
+          support families in a rural village in India who were struggling to access
+          healthcare and basic medical supplies. I created over 50 handmade coasters and more than 20 mugs and sold them
+          at my school during the last couple weeks of sixth grade. 
+        </p>
+
+        <p>
+          Friends, family, and my school community responded to the art fundraiser with amazing generosity.
+          Together we raised <strong>$700</strong>, which was used to purchase and
+          distribute oxygen meters through a local community organization. I was so glad that I had been able to help people 
+          on the other side of the globe with my artwork, even if it was just one village.
+        </p>
+      </div>
+    </section>
+
+
+    <footer class="site-footer">
+      <small>&copy; <span id="year"></span> Poorva Khambekar</small>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+
+

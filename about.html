@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About • Poorva Khambekar</title>
+
+    <!-- import fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- main stylesheet -->
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- About-page specific styles -->
+    <style>
+      :root{
+        --paper:#f4efe6;
+        --ink:#5a513e;
+        --accent:#b59a63;
+        --accent-dark:#8a7246;
+      }
+
+      .about-page{
+        max-width:1200px;
+        margin:0 auto;
+        padding:2.5rem 1rem 4rem;
+      }
+
+      .about-hero{
+        margin-bottom:3.5rem;
+      }
+      .about-hero .intro{
+        margin-top:.5rem;
+        max-width:32rem;
+      }
+
+      /* Hanging photos strip */
+      .hanging-strip{
+        position:relative;
+        margin-top:2.4rem;
+        padding-top:3.5rem;
+        padding-bottom:17rem; /* space before text */
+        min-height:280px;
+      }
+
+      /* Simple curved string using SVG */
+      .hanging-strip svg.string{
+        position:absolute;
+        left:-4%;
+        right:-4%;
+        top:40px;
+        height:80px;
+        overflow:visible;
+      }
+      .hanging-strip .string-path{
+        stroke:var(--accent-dark);
+        stroke-width:2.2;
+        fill:none;
+        stroke-linecap:round;
+      }
+
+      /* Polaroid frames */
+      .polaroid{
+        --angle: -4deg;          /* default, overridden per-photo */
+        position:absolute;
+        width:190px;
+        background:#f9f3e7;
+        padding:.7rem .7rem 1.7rem;   /* thicker bottom padding = polaroid feel */
+        box-shadow:0 16px 32px rgba(0,0,0,.18);
+        border-radius:0;
+        transform-origin:top center;
+        transform:rotate(var(--angle));
+        transition:
+          transform 220ms ease,
+          box-shadow 220ms ease;
+      }
+      .polaroid-inner{
+        border:1px solid rgba(0,0,0,.08);
+        background:#fdf9f1;
+        overflow:hidden;
+      }
+      .polaroid img{
+        width:100%;
+        display:block;
+        height:210px;
+        object-fit:cover;
+      }
+
+      /* tiny clip & string down from the line */
+      .polaroid::before{
+        content:"";
+        position:absolute;
+        top:-16px;
+        left:50%;
+        width:28px;
+        height:20px;
+        background:#f9f3e7;
+        border:1px solid rgba(0,0,0,.18);
+        transform:translateX(-50%);
+        border-radius:6px 6px 3px 3px;
+        box-shadow:0 3px 6px rgba(0,0,0,.15);
+      }
+      .polaroid::after{
+        content:"";
+        position:absolute;
+        top:-38px;
+        left:50%;
+        width:2px;
+        height:26px;
+        background:var(--accent-dark);
+        transform:translateX(-50%);
+      }
+
+      /* positions + base rotations */
+      .polaroid.p1{
+        --angle:-8deg;
+        left:6%;
+        top:92px;
+      }
+      .polaroid.p2{
+        --angle:3deg;
+        left:29%;
+        top:70px;
+      }
+      .polaroid.p3{
+        --angle:-5deg;
+        left:52%;
+        top:100px;
+      }
+      .polaroid.p4{
+        --angle:7deg;
+        left:75%;
+        top:78px;
+      }
+
+      /* gentle wobble / lift on hover */
+      .polaroid:hover{
+        transform:
+          translateY(-6px)
+          rotate(calc(var(--angle) + 2deg));
+        box-shadow:0 22px 40px rgba(0,0,0,.25);
+      }
+
+      /* About text + side images */
+      .about-body{
+        display:grid;
+        grid-template-columns:minmax(0,2fr) minmax(0,1.3fr);
+        gap:2.5rem;
+        align-items:flex-start;
+        margin-top:1.5rem;
+      }
+
+      .about-copy h2{
+        font-family:"Playfair Display", serif;
+        font-weight:700;
+        letter-spacing:.06em;
+        margin:0 0 .75rem;
+      }
+      .about-copy p{
+        margin:.25rem 0 1rem;
+        max-width:40rem;
+      }
+      .about-copy ul{
+        padding-left:1.1rem;
+        margin:.25rem 0 1.25rem;
+      }
+
+      .about-side-images{
+        display:grid;
+        gap:1.25rem;
+      }
+      .about-side-images figure{
+        margin:0;
+        background:#f9f3e7;
+        padding:.6rem .6rem 1rem;
+        box-shadow:0 10px 24px rgba(0,0,0,.14);
+        border-radius:0;
+      }
+      .about-side-images img{
+        width:100%;
+        display:block;
+        object-fit:cover;
+      }
+      .about-side-images figcaption{
+        margin-top:.4rem;
+        font-size:.9rem;
+        color:rgba(90,81,62,.8);
+      }
+
+      @media (max-width:900px){
+        .polaroid{ width:160px; }
+        .about-body{
+          grid-template-columns:1fr;
+        }
+      }
+      @media (max-width:700px){
+        .polaroid{
+          position:relative;
+          top:auto; left:auto;
+          display:inline-block;
+          margin:0 .6rem 1.8rem;
+        }
+        .hanging-strip{
+          text-align:center;
+          padding-top:3rem;
+        }
+        .hanging-strip svg.string{
+          display:none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- same navbar -->
+    <nav class="topnav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="work.html">Work</a></li>
+        <li><a href="shop.html">Shop</a></li>
+      </ul>
+
+      <a class="brand" href="index.html">PK</a>
+
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <main class="about-page">
+      <header class="about-hero">
+        <h1 class="display">About Me</h1>
+        <p class="intro">
+          My art journey &mdash; who I am, what I care about,
+          and my favorite mediums!
+        </p>
+
+        <!-- hanging photos -->
+        <section class="hanging-strip" aria-label="Photos of Poorva">
+          <!-- Simple curved string -->
+          <svg class="string" viewBox="0 0 300 40" aria-hidden="true" preserveAspectRatio="none">
+            <path class="string-path"
+              d="M -120 35
+   Q 60 0, 150 25
+   T 720 35"
+/>
+          </svg>
+
+          <!-- Polaroid frames -->
+          <figure class="polaroid p1">
+            <div class="polaroid-inner">
+              <img src="./aboutMePhotos/about_1.png" alt="Poorva drawing in a sketchbook" />
+            </div>
+          </figure>
+
+          <figure class="polaroid p2">
+            <div class="polaroid-inner">
+              <img src="./aboutMePhotos/about_2.jpeg" alt="Poorva holding a paint palette" />
+            </div>
+          </figure>
+
+          <figure class="polaroid p3">
+            <div class="polaroid-inner">
+              <img src="./aboutMePhotos/about_3.jpeg" alt="Poorva working at her desk" />
+            </div>
+          </figure>
+
+          <figure class="polaroid p4">
+            <div class="polaroid-inner">
+              <img src="./aboutMePhotos/about_4.png" alt="Close-up of Poorva's workspace" />
+            </div>
+          </figure>
+        </section>
+      </header>
+
+      <section class="about-body">
+        <div class="about-copy">
+          <h2>Hey, I'm Poorva!</h2>
+          <p>
+            
+          </p>
+          I'm a high school student living in the Bay Area and art is one of my many passions. I also love playing tennis, debating, watching murder mysteries, and exploring new cafes.
+          I would consider myself a mixed-media artist, however, I'm most comfortable with graphite and marker. 
+          <p>
+            I grew up filling my notebook margins with doodles, and that
+            habit never really stopped. These days, my inspiration for my pieces comes from
+            <strong>everyday objects, city scenes, family pictures, and abstract designs</strong>.
+          </p>
+
+          <h2>What I love working with</h2>
+          <ul>
+            <li>Graphite, ink and colored pencil for detailed line work</li>
+            <li>Gouache and acrylic: I rarely paint but I love the boldness of the colors</li>
+            <li>Collage - I've been experimenting with layering more recently</li>
+          </ul>
+
+          <p>
+            When I’m not drawing, you can find me at Michaels, which is my FAVORITE place in the world. 
+            
+            I hope this page gave you a little glimpse of who I am!
+          </p>
+        </div>
+
+        <aside class="about-side-images" aria-label="Additional photos of Poorva and her process">
+          <figure>
+            <img src="./aboutMePhotos/about_5.jpeg" alt="Paints, brushes, and a sketchbook on a desk" />
+            <figcaption>November, 2025</figcaption>
+          </figure>
+          
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>&copy; <span id="year"></span> Poorva Khambekar</small>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+
+
+
